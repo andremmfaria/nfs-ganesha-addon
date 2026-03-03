@@ -16,7 +16,7 @@ map:
   - config:rw
   - ssl:rw
   - addons:rw
-  - addon_configs:rw
+  - all_addon_configs:rw
   - backup:rw
   - share:rw
   - media:rw
