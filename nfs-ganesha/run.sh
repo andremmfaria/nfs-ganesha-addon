@@ -55,12 +55,15 @@ NFSv4
 
 EXPORT_DEFAULTS
 {
-    Access_Type = RW;
+    Squash = All_Squash;
+    Anonymous_Uid = 0;
+    Anonymous_Gid = 0;
 }
 
 LOG {
     # limit log clutter
     Default_Log_Level = WARN;
+    COMPONENTS { EXPORT = Full_Debug; }
 }
 EOF
 
@@ -80,21 +83,12 @@ EXPORT
     Export_Id = $ID;
     Path = "$DIR";
     Pseudo = "$DIR";
-    Access_Type = RW;
-    
-    # Map all users to root for full access
-    Squash = All_Squash;
-    Anonymous_Uid = 0;
-    Anonymous_Gid = 0;
-    
+    FSAL { Name = VFS; }
+    Access_Type = None;
     CLIENT
     {
         Clients = $AUTHORIZED_IPS;
         Access_Type = RW;
-    }
-
-    FSAL {
-        Name = VFS;
     }
 }
 EOF
