@@ -10,7 +10,7 @@ Expose Home Assistant folders via NFS (Network File System) using nfs-ganesha.
 
 ## About
 
-This app runs nfs-ganesha to share Home Assistant directories over your network using NFS. It supports both NFSv3 and NFSv4 protocols.
+This app runs nfs-ganesha to share Home Assistant directories over your network using NFSv4.
 
 ## Features
 
@@ -18,7 +18,7 @@ This app runs nfs-ganesha to share Home Assistant directories over your network 
 - IP-based access control
 - Support for multiple authorized IPs/subnets
 - Full read-write access
-- NFSv3 and NFSv4 support
+- NFSv4 support
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg

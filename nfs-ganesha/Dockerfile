@@ -5,7 +5,6 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y \
     nfs-ganesha \
     nfs-ganesha-vfs \
-    rpcbind \
     dbus \
     bash \
     jq \

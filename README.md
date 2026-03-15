@@ -7,7 +7,7 @@ Expose Home Assistant folders via NFS using nfs-ganesha in userspace.
 
 ## Features
 
-- ✅ NFSv3 and NFSv4 support
+- ✅ NFSv4 support
 - ✅ Select which Home Assistant folders to export
 - ✅ IP-based access control with support for multiple IPs/subnets
 - ✅ Userspace implementation (no kernel modules required)
@@ -168,7 +168,6 @@ umount /mnt/test
 ## Known Limitations
 
 - `showmount -e` command may not work due to rpcbind limitations in container mode
-- NFSv4 is recommended; NFSv3 may have limited functionality
 - Access control is IP-based only (no user authentication)
 
 ## Support

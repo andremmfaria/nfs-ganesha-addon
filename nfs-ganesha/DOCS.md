@@ -271,8 +271,7 @@ sudo mount -t nfs4 <HA_IP>:/ /mnt/homeassistant
 ## Performance Tips
 
 1. **Mount the root (`/`)** instead of individual exports to reduce overhead
-2. **Use NFSv4** exclusively (faster than NFSv3)
-3. **Use wired connections** for best performance
+2. **Use wired connections** for best performance
 4. **Adjust buffer sizes** with mount options if needed:
    ```bash
    mount -t nfs4 -o rsize=1048576,wsize=1048576 <HA_IP>:/ /mnt/ha

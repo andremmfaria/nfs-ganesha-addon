@@ -19,16 +19,7 @@ mkdir -p /var/run/dbus
 if [ -e /var/run/dbus/pid ]; then rm /var/run/dbus/pid; fi
 dbus-daemon --system --fork
 
-# 2. Start RPCBIND (but don't fail if it doesn't work)
-if rpcinfo -p localhost > /dev/null 2>&1; then
-    echo "[INFO] rpcbind is already running on host."
-else
-    echo "[INFO] Starting rpcbind..."
-    mkdir -p /run/rpcbind
-    rpcbind || echo "[WARN] rpcbind failed to start, continuing anyway..."
-fi
-
-# 3. Build Ganesha Configuration
+# 2. Build Ganesha Configuration
 CONF="/etc/ganesha/ganesha.conf"
 mkdir -p /etc/ganesha
 
@@ -40,10 +31,9 @@ cat > $CONF <<EOF
 NFS_CORE_PARAM
 {
     NFS_Port = 2049;
-    NFS_Protocols = 3,4;
-
-    # Enable mount protocol (needed for showmount)
-    Mount_Path_Pseudo = true;
+    NFS_Protocols = 4;
+    Enable_NLM = false;
+    Enable_RQUOTA = false;
 }
 
 NFSv4
@@ -60,10 +50,19 @@ EXPORT_DEFAULTS
     Anonymous_Gid = 0;
 }
 
+NFS_KRB5
+{
+    Active_krb5 = false;
+}
+
 LOG {
-    # limit log clutter
     Default_Log_Level = WARN;
-    COMPONENTS { EXPORT = Full_Debug; }
+    COMPONENTS {
+        TIRPC = FATAL;
+        NFS_CB = FATAL;
+        INIT = FATAL;
+        DISPATCH = FATAL;
+    }
 }
 EOF
 
@@ -88,6 +87,7 @@ EXPORT
     CLIENT
     {
         Clients = $AUTHORIZED_IPS;
+        Protocols = 4;
         Access_Type = RW;
     }
 }
@@ -98,15 +98,18 @@ EOF
     fi
 done <<< "$EXPORT_FOLDERS"
 
-echo "[DEBUG] ===== Generated Ganesha Config ====="
-cat $CONF
-echo "[DEBUG] ===================================="
 
-# 5. Launch Ganesha with the "Log & Tail" trick
-LOGFILE="/var/log/ganesha.log"
+# Create rpcbind socket directory so libtirpc can fall back to TCP (HAOS rpcbind)
+mkdir -p /run/rpcbind
+
+LOGFILE="/tmp/ganesha.log"
 touch $LOGFILE
 tail -F $LOGFILE &
+TAIL_PID=$!
 
 echo "[NFS] Launching Ganesha Daemon..."
 
-/usr/bin/ganesha.nfsd -F -L $LOGFILE -f $CONF
+/usr/bin/ganesha.nfsd -F -L $LOGFILE -f $CONF 2>&1 || true
+
+echo "[NFS] Ganesha exited"
+kill $TAIL_PID 2>/dev/null || true
